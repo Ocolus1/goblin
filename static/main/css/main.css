@@ -1,0 +1,456 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    background-image : url("../img/bg.jpeg");
+    /* background-size : cover; */
+    background-position: center;
+    background-repeat: repeat;
+}
+
+.hid {
+    display: none;
+}
+
+header {
+    margin-top: 2rem;
+}
+
+.head_img {
+    display: inline-block;
+    width: 5rem;
+    height: 5rem;
+}
+
+.head_text {
+    display: inline-block;
+    font-size: 170%;
+    font-weight: bolder;
+}
+
+/* section one */
+.section_one {
+    margin-top: 2rem;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.outer_div_one, 
+.outer_div_two,
+.outer_div_three,
+.outer_div_four {
+    background-color: #AA7851;
+    padding: 1rem;
+}
+
+.inner_div_one, 
+.inner_div_two,
+.inner_div_three,
+.inner_div_four {
+    background-color: #C4C4C4;
+}
+
+.col_one {
+    width: 100%;
+    margin: 1rem 2rem;
+}
+
+.inner_div_one {
+    text-align: center;
+    padding: 2rem;
+}
+
+.bt_connect {
+    background: #FFE300;
+    color: #FF0000;
+    padding: .6rem 1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    border: 3px solid red;
+}
+
+.status {
+    text-decoration: none;
+    color: red;
+    font-weight: bolder;
+    /* border: 3px solid red; */
+    display: block;
+    margin: .5rem auto;
+}
+
+.status:hover {
+    color: green;
+}
+
+.user_connect {
+    text-align: center;
+}
+
+.username {
+    background: #AAAAAA;
+    color: #FFE300;
+    border: none;
+    width: 90%;
+    margin: 1rem  auto;
+    text-align: center;
+}
+
+.username::placeholder {
+    color: #FFE300;
+    text-align: center;
+}
+
+.username:focus {
+    background-color: #AAAAAA;
+}
+
+.bt_connect2 {
+    background: #FFE300;
+    color: #FF0000;
+    padding: .5rem 1rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    margin-top: .1rem;
+    border: none;
+    text-align: center;
+    border-radius: 1rem;
+}
+
+.div_one_txt{
+    margin-bottom: 1.5rem;
+    font-weight: bolder;
+}
+
+.col_3 {
+    width: 100%;
+}
+
+.inner_div_two {
+    text-align: center;
+    padding: 2rem;
+}
+
+.leader_b{
+    color: #FFE300;
+    margin-bottom: 1.5rem;
+}
+
+.l_address {
+    color: #FF0000;
+    font-weight: bolder;
+}
+
+/* section two */
+.section_two {
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+
+.inner_div_three {
+    padding: 1rem;
+}
+
+.row_three {
+    text-align: center;
+}
+
+.col_6 {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.game_status {
+    color: #FF0000;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    font-weight: bolder;
+}
+
+div.data > p {
+    font-family: monospace;
+    line-height: 22.18px;
+}
+
+
+
+/*section three */
+.section_three {
+    margin-bottom: 8rem;
+    padding: 2rem;
+}
+
+.inner_div_four {
+    padding: 1rem;
+}
+
+.col_4 {
+    width: 100%;
+    margin: 0 auto;
+    /* border: 4px solid black; */
+}
+
+.bt_whitepaper {
+    color: #FF0000;
+    border: 4px solid #AA7851;
+    font-weight: bolder;
+    padding: .5rem .3rem;
+    margin-right: .5rem;
+}
+
+.bt_tos {
+    color: #FF0000;
+    border: 4px solid black;
+    font-weight: bolder;
+    padding: .5rem 1.5rem;
+}
+@media screen and (min-width: 576px) {
+    .head_img {
+        width: 6rem;
+        height: 6rem;
+        margin-right: 5rem;
+    }
+    
+    .head_text {
+        font-size: 200%;
+    }
+
+    .inner_div_one {
+        padding: 3rem;
+    }
+    
+    .bt_connect {
+        margin-bottom: 1.8rem;
+    }
+    
+    .username {
+        width: 80%;
+    }
+    
+    .bt_connect2 {
+        padding: .7rem 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: .1rem;
+        border-radius: 1.5rem;
+    }
+    
+    .div_one_txt{
+        margin-bottom: 1.6rem;
+    }
+
+    .leader_b{
+        margin-bottom: 2rem;
+    }
+
+    .section_two {
+        padding: 1rem;
+    }
+    
+    .game_status {
+        margin-top: .5rem;
+        margin-bottom: 1rem;
+    }
+
+    .section_three {
+        padding: 1rem;
+    }
+    
+    .bt_whitepaper {
+        padding: 1rem 1rem;
+        margin-right: 1rem;
+    }
+    
+    .bt_tos {
+        padding: 1rem 3.2rem;
+    }
+    
+}
+
+@media screen and (min-width: 768px) {
+    .head_img {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .head_text {
+        text-align: center;
+        display: block;
+        font-size: 250%;
+    }
+
+    .section_one {
+        margin: 4rem 0 3rem 0;
+    }
+    
+    .col_one {
+        position: relative;
+        width: 57%;
+        margin: 0;
+        display: inline-block;
+    }
+
+    .col_3 {
+        width: 43%;
+        display: inline-block;
+    }
+    
+    .outer_div_one {
+        position: absolute;
+        top: 20%; 
+        left: 0%;
+    }
+    
+    .inner_div_one {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .bt_connect {
+        margin-bottom: 1rem;
+    }
+    
+    .div_one_txt{
+        margin-bottom: 1rem;
+    }
+    
+    .inner_div_two {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .leader_b{
+        margin-bottom: 1.5rem;
+    }
+
+    .section_two {
+        margin-bottom: 4rem;
+    }
+    
+    .inner_div_three {
+        padding: 1.5rem;
+    }
+    
+    .row_three {
+        text-align: center;
+    }
+    
+    .col_6 {
+        width: 70%;
+        margin: 0 auto;
+    }
+    
+    .game_status {
+        margin-bottom: 2rem;
+    }
+
+    .section_three {
+        margin-bottom: 8rem;
+    }
+    
+    .inner_div_four {
+        padding: 2rem;
+    }
+    
+    .col_4 {
+        width: 50%;
+        margin: 0 auto;
+    }
+
+    .bt_whitepaper {
+        padding: .5rem .3rem;
+        margin-right: .5rem;
+    }
+    
+    .bt_tos {
+        padding: .5rem 1.5rem;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .outer_div_one, 
+    .outer_div_two,
+    .outer_div_three,
+    .outer_div_four {
+        padding: 2rem;
+    }
+
+    .inner_div_one {
+        padding: 4rem;
+    }
+
+    .inner_div_three {
+        padding: 2rem;
+    }
+
+    .col_6 {
+        width: 60%;
+    }
+
+    .bt_connect {
+        margin-bottom: 1.8rem;
+    }
+
+    .username {
+        width: 70%;
+        margin: 1rem  auto;
+    }
+    
+    .bt_connect2 {
+        padding: .7rem 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: .1rem;
+        border-radius: 1.5rem;
+    }
+    
+    .col_4 {
+        width: 43%;
+    }
+
+    .bt_whitepaper {
+        padding: .6rem .3rem;
+        margin-right: .3rem;
+    }
+
+    .bt_tos {
+        padding: .6rem 2rem;
+    }
+}
+@media screen and (min-width: 1024px) {
+    
+    .col_6 {
+        width: 50%;
+    }
+    
+    .col_4 {
+        width: 35%;
+    }
+
+    .bt_whitepaper {
+        padding: 1rem 1rem;
+        margin-right: 1rem;
+    }
+
+    .bt_tos {
+        padding: 1rem 3.2rem;
+    }
+
+    .username {
+        width: 50%;
+        margin: 1rem  auto;
+    }
+    
+    .bt_connect2 {
+        padding: .9rem 2rem;
+        margin-bottom: 1.5rem;
+        margin-top: .1rem;
+        border-radius: 2rem;
+    }
+}

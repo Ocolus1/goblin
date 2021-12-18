@@ -1,0 +1,128 @@
+window.userAddress = null; 
+    window.onload = async () => { 
+        // Init Web3 connected to ETH network 
+        if (window.ethereum) { 
+            window.web3 = new Web3(window.ethereum); 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        } 
+        // Load in Localstore key
+        window.userAddress = window.localStorage.getItem("userAddress"); 
+        if (window.userAddress) { 
+            document.querySelector("#connect_btn").classList.add("hid"); 
+            document.querySelector("#connect_btn2").classList.remove("hid"); 
+            console.log("logged in") 
+            await fetchData(); 
+        }else { 
+            document.querySelector("#username").classList.remove("hid");
+            document.querySelector("#connect_btn").classList.remove("hid"); 
+            console.log("logged out") 
+        } 
+        showAddress(); 
+    }; 
+
+
+    // Use this function to turn a 42 character ETH address // into an address like 0x345...12345 
+    function truncateAddress(address) { 
+        if (!address) { 
+            return ""; 
+        } 
+        return `${address.substr(0, 5)}...${address.substr( address.length - 5, address.length )}`;
+    } 
+
+    // Display or remove the users know address on the frontend 
+    function showAddress() { 
+        if (!window.userAddress) { 
+            document.getElementById("address").innerText = ""; 
+            document.getElementById("logoutButton").classList.add("hidden"); 
+            return false; 
+        } 
+        document.getElementById( "address" ).innerHTML = `ETH Address: ${truncateAddress(window.userAddress)}`; 
+        document.getElementById("logoutButton").classList.remove("hidden");
+    } 
+
+    function alertMsg() {
+        alert("username already exists!")
+    }
+
+
+    // remove stored user address and reset frontend 
+    function logout() { 
+        window.userAddress = null; 
+        window.localStorage.removeItem("userAddress"); 
+        showAddress(); 
+    } 
+
+    async function sendData() { 
+        const username = await document.getElementById("username").value;
+        let user = { 
+            username: username, 
+            address: userAddress 
+        } 
+        console.log(user); 
+        let url = "/echo234/" 
+        let body = JSON.stringify(user) 
+        let res = await fetch(url, { 
+            method: 'POST', 
+            headers: { 
+                "Accept": "application/json", 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{csrftoken}}" 
+            }, 
+            body: body, 
+        })
+    } 
+
+
+    function fetchData() { 
+        let url = `data_list/${window.userAddress}` 
+        fetch(url).then(response => { 
+            if (response.status !== 200) { 
+                console.log('Looks like there was a problem. Status Code: ' + response.status);
+            } 
+            return response.json(); 
+        }).then(data => { 
+            console.log(data);
+        }).catch(error => { 
+            console.log(error.message); 
+        }) 
+    } 
+
+    async function med() {
+        // We use this since ethereum.enable() is deprecated. This method is not 
+        // available in Web3JS - so we call it directly from metamasks' library 
+        const selectedAccount = await window.ethereum.request({ 
+            method: "eth_requestAccounts", 
+        }).then((accounts) => accounts[0]).catch(() => { 
+        throw Error("No account selected!"); 
+        }); 
+        window.userAddress = selectedAccount; 
+        window.localStorage.setItem("userAddress", selectedAccount); 
+        await sendData();
+        showAddress();
+    }
+
+
+    // Login with Web3 via Metamasks window.ethereum library 
+    async function loginWithEth() { 
+        if (window.web3) { 
+            try {
+                // We use this since ethereum.enable() is deprecated. This method is not 
+                // available in Web3JS - so we call it directly from metamasks' library 
+                const selectedAccount = await window.ethereum.request({ 
+                    method: "eth_requestAccounts", 
+                }).then((accounts) => accounts[0]).catch(() => { 
+                throw Error("No account selected!"); 
+                }); 
+                window.userAddress = selectedAccount; 
+                window.localStorage.setItem("userAddress", selectedAccount); 
+                await sendData();
+                showAddress();
+            } catch (error) { 
+                console.log(error); 
+            } 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        } 
+        window.location.reload(); 
+    }

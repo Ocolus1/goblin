@@ -1,0 +1,240 @@
+{% extends "main/base.html" %} {% load static %} {% block content %}
+<header>
+    <img src="{% static 'main/img/man.png' %}" class="img-fluid head_img" alt="Goblin Hunter">
+    <h1 class="head_text">
+        <span style="color:#90D654">GOBLIN</span>
+        <span style="color:#FF0000">HUNTER</span>
+    </h1>
+</header>
+<main>
+    <section class="section_one">
+        <div class="container">
+            <div class="row justify-content-center ">
+                <div class="col col-7 col_one ">
+                    <div class="outer_div_one">
+                        <div class="inner_div_one">
+                            <div class="user_connect">
+                                {% if request.user.is_authenticated %}
+                                <a class="btn bt_connect" href="{% url 'game' %}" target="_blank" 
+                                style="color:green;" id="connect_btn2" role="button">
+                                    ENTER GAME
+                                    <p id="address" style="color:red;"></p>
+                                </a>
+                                <a href="{% url 'dashboard' %}" class="status">CHECK STATS</a>
+                                {% else %}
+                                <input type="text" class="form-control username" id="username" name="username" 
+                                placeholder="Enter your username to play.">
+                                <button class="btn bt_connect2" onclick="loginWithEth()" id="connect_btn">
+                                    CONNECT WALLET
+                                </button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="div_one_txt">
+                                USE METAMASK OR TRUST WALLET TO CONNECT AND BEGIN PLAYING THE GAME
+                            </div>
+                            <div class="link_out">
+                                <a href="#">
+                                    <img src="{% static 'main/img/app_store2.png' %}" class="l_logo" alt="app store" />
+                                </a>
+                                <a href="#">
+                                    <img src="{% static 'main/img/g_play2.png' %}" class="l_logo" alt="google play" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-3 col_3">
+                    <div class="outer_div_two">
+                        <div class="inner_div_two">
+                            <h4 class="leader_b">LEADERBOARD</h3>
+                                <div>
+                                    <p class="l_address">
+                                        <span>1.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>2.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>3.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>4.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>5.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>6.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>7.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>8.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>9.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>10.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container section_two">
+        <div class="row row_three">
+            <div class="col_6">
+                <div class="outer_div_three">
+                    <div class="inner_div_three">
+                        <h3 class="game_status">GAME STATUS</h3>
+                        <div class="data ">
+                            <p>NO OF PLAYERS: <span style="color:#457500">50,023 </span> </p>
+                                    <p>COINS MINTED: <span style="color:#457500">300,023 </span> </p>
+                                    <p>BOXES COLLECTED: <span style="color:#457500">50,023 </span> </p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <section class="container section_three">
+        <div class="row row_three ">
+            <div class="col_4">
+                <div class="outer_div_four">
+                    <div class="inner_div_four">
+                        <button class="btn  bt_whitepaper">WHITEPAPER</button>
+                        <button class="btn  bt_tos">TOS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script type="text/Javascript">
+    window.onload = async () => { 
+        // Init Web3 connected to ETH network 
+        if (window.ethereum) { 
+            window.web3 = new Web3(window.ethereum); 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        }
+        // Load in Localstore key
+        let ad = "{{user.address}}"
+        document.getElementById( "address" ).innerHTML = `ETH Address: ${truncateAddress(ad)}`;  
+    }; 
+
+
+    // Use this function to turn a 42 character ETH address // into an address like 0x345...12345 
+    function truncateAddress(address) { 
+        if (!address) { 
+            return ""; 
+        } 
+        return `${address.substr(0, 5)}...${address.substr( address.length - 5, address.length )}`;
+    } 
+
+    // Display or remove the users know address on the frontend 
+    function showAddress() { 
+        if (!window.userAddress) { 
+            document.getElementById("address").innerText = ""; 
+            document.getElementById("logoutButton").classList.add("hidden"); 
+            return false; 
+        } 
+        document.getElementById("logoutButton").classList.remove("hidden");
+    } 
+
+
+    // remove stored user address and reset frontend 
+    function logout() { 
+        window.userAddress = null; 
+        window.localStorage.removeItem("userAddress"); 
+        showAddress();
+    } 
+
+    async function sendData(userAddress) { 
+        const username = await document.getElementById("username").value;
+        let user = { 
+            username: username, 
+            address: userAddress 
+        } 
+        console.log(user); 
+        let url = "/echo234/" 
+        let body = JSON.stringify(user) 
+        let res = await fetch(url, { 
+            method: 'POST', 
+            headers: { 
+                "Accept": "application/json", 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{csrftoken}}" 
+            }, 
+            body: body, 
+        })
+    } 
+
+    // Login with Web3 via Metamasks window.ethereum library 
+    async function loginWithEth() { 
+        if (window.web3) { 
+            try {
+                // We use this since ethereum.enable() is deprecated. This method is not 
+                // available in Web3JS - so we call it directly from metamasks' library 
+                const selectedAccount = await window.ethereum.request({ 
+                    method: "eth_requestAccounts", 
+                }).then((accounts) => accounts[0]).catch(() => { 
+                    throw Error("No account selected!"); 
+                }); 
+                await sendData(selectedAccount);
+            } catch (error) { 
+                console.log(error); 
+            } 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        } 
+        window.location.reload(); 
+    }
+
+    // const username = await document.getElementById("username").value;
+    // let user = { 
+    //     username: username, 
+    // } 
+    // console.log(user); 
+    // let url = "/auth_user/" 
+    // let body = JSON.stringify(user) 
+    // let res = await fetch(url, { 
+    //     method: 'POST', 
+    //     headers: { 
+    //         "Accept": "application/json", 
+    //         'Content-Type': 'application/json',
+    //         'X-CSRFToken': "{{csrftoken}}" 
+    //     }, 
+    //     body: body, 
+    // }).then(response => { 
+    //     return response.json(); 
+    // }).then(data => { 
+    //     console.log(data);
+    //     if (data["is_exist"] == "exists") {
+    //         alertMsg();
+    //     } else if (data["is_exist"] == "not_exists") {
+    //         med();
+    //     }
+    // }).catch(error => { 
+    //     console.log(error.message); 
+    // })
+</script>
+
+{% endblock content %}

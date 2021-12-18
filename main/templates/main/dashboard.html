@@ -1,0 +1,40 @@
+{% extends "main/admin_base.html" %} {% load static %} {% block content %}
+<div class="d_body">
+    <header>
+        <img src="{% static 'main/img/man.png' %}" class="head_img" alt="Goblin Hunter">
+        <p class=" img_div">
+            <a href="{% url 'game' %}" class="img_txt">PLAY</a>
+        </p>
+        <p class="m-auto user" >{{ user.username|upper }}</p>
+    </header>
+    <main>
+        <div class='section_one'>
+            <div class="outer_div_one">
+                <div class="inner_div_one">
+                    <div class="row r_ow">
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/box.png' %}" alt="box">
+                            <p class="one_txt">145</p>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/coins.png' %}" alt="coins">
+                            <p class="one_txt">234.65</p>
+                        </div>
+                        <div class="col-lg-4  col-sm-12">
+                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/people.png' %}" alt="referral">
+                            <p class="one_txt">32</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='section_two'>
+            <div class="outer_div_two">
+                <div class="inner_div_two">
+                    <a href="{% url 'logout_view' %}" class="logout">LOGOUT</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock content %}

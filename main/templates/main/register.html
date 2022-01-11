@@ -1,0 +1,146 @@
+{% extends "main/base.html" %} {% load static %} {% block content %}
+  <head>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">  
+
+    <style>
+
+        .devo {
+            background-image : url("{% static 'main/img/1.png' %}");
+            background-size : cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-signin {
+            width: 80%;
+            padding: 15px;
+            margin: auto;
+            background-color: #2A3419;
+        }
+
+        .username {
+            background: #2A3419;
+            color: #DDB957;
+            border: none;
+            width: 100%;
+            margin: 1rem  auto;
+            text-align: center;
+            border: 2px solid #c0baba;
+        }
+        .username::placeholder {
+            color: #DDB957;
+            text-align: center;
+        }
+
+        .username:focus {
+            color: #DDB957;
+            background-color: #2A3419;
+        }
+
+        small {
+            color: #9B9B9BDE;
+        }
+
+        .bt_tos {
+            color: #DDB957;
+            border: 5px solid #DDB957;
+            font-weight: bolder;
+            padding: .6rem 3rem;
+            background-color: black;
+        }
+
+        .bt_tos:hover {
+            color: #DDB957;
+        }
+
+        @media screen and (min-width: 576px) {
+            .form-signin {
+                width: 70%;
+            }
+
+            .username {
+                width: 90%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {   
+            .form-signin {
+                width: 50%;
+            }
+
+            .username {
+                width: 90%;
+            }
+
+        }
+
+        @media screen and (min-width: 992px) {
+            .form-signin {
+                width: 40%;
+            }
+
+            .username {
+                width: 70%;
+            }
+        }
+    </style>
+</head>
+<div class="devo text-center">
+    <main class="form-signin">
+        <div class="mb-1">
+            <input type="text" class="form-control username"
+            placeholder="WATSON" id="username" name="username">
+            <small>YOU CANNOT CHANGE YOUR USERNAME*</small>
+        </div>
+        <button class="btn bt_tos mt-3 mb-3" onclick="loginWithEth()">SIGN UP</button>
+    </main>
+</div>
+<script type="text/javascript">
+    async function sendData(userAddress) { 
+        const username = await document.getElementById("username").value;
+        let user = { 
+            username: username, 
+            address: userAddress 
+        } 
+        // console.log(user); 
+        let url = "/register/" 
+        let body = JSON.stringify(user) 
+        let res = await fetch(url, { 
+            method: 'POST', 
+            headers: { 
+                "Accept": "application/json", 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{csrftoken}}" 
+            }, 
+            body: body, 
+        })
+    } 
+
+    // Login with Web3 via Metamasks window.ethereum library 
+    async function loginWithEth() { 
+        if (window.web3) { 
+            try {
+                // We use this since ethereum.enable() is deprecated. This method is not 
+                // available in Web3JS - so we call it directly from metamasks' library 
+                const selectedAccount = await window.ethereum.request({ 
+                    method: "eth_requestAccounts", 
+                }).then((accounts) => accounts[0]).catch(() => { 
+                    throw Error("No account selected!"); 
+                }); 
+                res = await sendData(selectedAccount)
+                window.location.href = "{% url 'index' %}" 
+            } catch (error) { 
+                console.log(error); 
+            } 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        } 
+        // window.location.href = "{% url 'index' %}" 
+    }
+</script>
+
+{% endblock content %}

@@ -13,80 +13,61 @@ import json
 import csv
 from django.db import models
 import telepot
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 import time
 import string
 from random import choices
 
-
-domain = settings.DOM
+User = get_user_model()
 
 token = settings.TOKEN
 secret = settings.SECRET
 # webhook_url = f"https://goblin.cypherspot.dev/telegram/{secret}/"
-webhook_url = f"https://b999-160-152-28-5.ngrok.io/telegram/"
-bot = telepot.Bot(token)
-if webhook_url != bot.getWebhookInfo()['url']:
-    bot.setWebhook(webhook_url)
+# webhook_url = f"https://32d3-160-152-42-163.ngrok.io/telegram/"
+# bot = telepot.Bot(token)
+# if webhook_url != bot.getWebhookInfo()['url']:
+#     bot.setWebhook(webhook_url)
 
-User = get_user_model()
+
 
 # Create your views here.
 def index(request):
+   
     context = {}
     return render(request, 'main/index.html', context)
 
-def auth_login(request):
-    exists = False
-    csrf_token = get_token(request)
-    if request.method == "POST":
-        data = json.loads(request.body.decode("utf-8"))
-        username = data['username']
-        address = data['address']
-        if User.objects.filter(address=address).exists():
-            user = authenticate(address=address, password=address)
-            if user is not None:
-                login(request, user)
-            else:
-                # No backend authenticated the credentials
-                print("Not authenticated")
-        else:
-            exists = True
-    context = {exists: exists, "csrftoken": csrf_token}
-    return render(request, 'main/login.html', context)
 
 
-def register(request):
-    csrf_token = get_token(request)
-    if request.method == "POST":
-        data = json.loads(request.body.decode("utf-8"))
-        username = data['username']
-        address = data['address']
-        payload = request.GET.get("payload")
-        if payload:
-            if User.objects.filter(payload=payload).exists():
-                user = User.objects.get(payload=payload)
-                user.referrals += 1
-                user.save()
-                User.objects.create_user(username=username, address=address, password=address, refs=payload)
-                us = authenticate(address=address, password=address)
-                if us is not None:
-                    login(request, us)
-                    # return redirect(to="/")
-            else:
-                User.objects.create_user(username=username, address=address, password=address)
-                us = authenticate(address=address, password=address)
-                if us is not None:
-                    login(request, us)
-                    # return redirect(to="/")
+# def index(request):
+#     csrf_token = get_token(request)
+#     user = ""
+#     if request.user.is_authenticated:
+#         address = request.user
+#         if User.objects.filter(address=address).exists():
+#             user = User.objects.get(address=address)
+#     context = {"csrftoken": csrf_token, "user": user}
+#     return render(request, 'main/index.html', context)
+
+
+def echo(request):
+    data = json.loads(request.body.decode("utf-8"))
+    username = data['username']
+    address = data['address']
+    if User.objects.filter(address=address).exists():
+        user = authenticate(address=address, password=address)
+        if user is not None:
+            login(request, user)
+            # A backend authenticated the credentials
+            print("authenticated")
         else:
-            User.objects.create_user(username=username, address=address, password=address)
-            us = authenticate(address=address, password=address)
-            if us is not None:
-                login(request, us)
-                # return redirect(to="/")
-    context = {"csrftoken": csrf_token}
-    return render(request, 'main/register.html', context)
+            # No backend authenticated the credentials
+            print("Not authenticated")
+    else:
+        user = User.objects.create_user(username=username, address=address, password=address)
+        us = authenticate(address=address, password=address)
+        if us is not None:
+            login(request, us)
+    context = {}
+    return render(request, 'main/index.html', context)
 
 
 @login_required(login_url='/')
@@ -95,9 +76,6 @@ def dashboard(request):
         address = request.user
         if User.objects.filter(address=address).exists():
             user = User.objects.get(address=address)
-            payload = user.payload
-            link = f"{domain}{payload}"
-            print(link, "hello")
     context = { "user": user}
     return render(request, 'main/dashboard.html', context)
 
@@ -199,6 +177,8 @@ def telegram(request):
                 if func and cmd.endswith(gen_c):
                     if cmd.startswith('/start'):
                         command, pay = cmd.split(" ")
+                        print(pay, "the pay")
+                        print(chat_id, "chatting")
                         link = Link.objects.get(gen_c=pay)
                         chat = Link.objects.filter(chat_id=chat_id)
                         if link and not chat:
@@ -215,8 +195,6 @@ def telegram(request):
                         return JsonResponse({}, status=200)
                     return JsonResponse({}, status=200)
                 elif func and not cmd.endswith(gen_c):
-                    print(func, "man")
-                    print(cmd, "man")
                     try:
                         bot.sendMessage(chat_id, func, parse_mode='Markdown')
                     except:
@@ -259,21 +237,7 @@ def telegram(request):
                 return JsonResponse({}, status=200)
             # Only to use at the begining
             else:
-                print(func, "man")
-                print(cmd, "man")
-                if cmd == "/start":
-                    key = ReplyKeyboardMarkup(keyboard=[
-                        [
-                            KeyboardButton(text="Image"),
-                            KeyboardButton(text="Photo"),
-                            KeyboardButton(text="Video")
-                        ]
-                    ],
-                        resize_keyboard = True
-                    )
-                    bot.sendMessage(chat_id, _start(),
-                        reply_markup=key, parse_mode="Markdown")
-                elif func :
+                if func :
                     try:
                         bot.sendMessage(chat_id, func, parse_mode='Markdown')
                         # bot.sendMessage(chat_id, "halo3", parse_mode='Markdown')

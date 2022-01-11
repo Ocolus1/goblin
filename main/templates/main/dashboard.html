@@ -1,40 +1,63 @@
-{% extends "main/admin_base.html" %} {% load static %} {% block content %}
-<div class="d_body">
-    <header>
-        <img src="{% static 'main/img/man.png' %}" class="head_img" alt="Goblin Hunter">
-        <p class=" img_div">
-            <a href="{% url 'game' %}" class="img_txt">PLAY</a>
-        </p>
-        <p class="m-auto user" >{{ user.username|upper }}</p>
-    </header>
-    <main>
-        <div class='section_one'>
-            <div class="outer_div_one">
-                <div class="inner_div_one">
-                    <div class="row r_ow">
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/box.png' %}" alt="box">
-                            <p class="one_txt">145</p>
+{% extends "main/base.html" %} {% load static %} {% block content %}
+<head>
+    <link rel="stylesheet" type='text/css' href="{% static 'main/css/main_2.css' %}" >
+</head>
+<div class="devo">
+    <main class="main_box">
+        <div class="row">
+            <div class="col-md-4 col-sm-12 div_list">
+                <small>Ref link: <span class="ref_link">https://localhost:register/jshdfk/</span></small>
+                <div class="list">
+                    <ul class="ulin">
+                        <li class="lin">RANK <span class="rank">AGEIS</span></li>
+                        <li class="lin">KARMA <span class="num">3200</span></li>
+                        <li class="lin">COINS <span class="num">13500</span></li>
+                        <li class="lin">PAYOUT <span class="num">700</span></li>
+                    </ul>
+                </div>
+                <div class="btn_div">
+                    <button class="btn bt_tos mt-3 mb-3">WITHDRAW</button>
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-12 div_pro1">
+                <div class="div_pro">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="w3-progress-container w3-round-xlarge">
+                                <div class="w3-progressbar w3-round-xlarge"></div>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/coins.png' %}" alt="coins">
-                            <p class="one_txt">234.65</p>
+                        <div class="col-8 mint">
+                            MINT PROGRESS
                         </div>
-                        <div class="col-lg-4  col-sm-12">
-                            <img class="rounded mx-auto d-block col_1" src="{% static 'main/img/people.png' %}" alt="referral">
-                            <p class="one_txt">32</p>
+                    </div>
+                    <div class="row box_row">
+                        <div class="col-4">
+                            <img src="{% static 'main/img/box.png' %}" class="box">
+                        </div>
+                        <div class="col-8">
+                            <div>
+                                <h1 class="h1_text">56</h1>
+                                <p class="mint_p">
+                                    You need to collect as many treasures as 
+                                    possible to fill up the yellow bar above
+                                </p>
+                                <div class="mint_p2">
+                                    LEARN MORE ABOUT GAME TREASURES
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row r_arr">
+                        <img src="{% static 'main/img/22.png' %}" class="arrow">
+                        <div class="btn_div">
+                            <button class="btn bt_tos mt-3 mb-3" >PLAY GAME</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class='section_two'>
-            <div class="outer_div_two">
-                <div class="inner_div_two">
-                    <a href="{% url 'logout_view' %}" class="logout">LOGOUT</a>
-                </div>
-            </div>
-        </div>
     </main>
 </div>
+
 {% endblock content %}

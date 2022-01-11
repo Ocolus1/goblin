@@ -8,11 +8,14 @@ secret = settings.SECRET
 urlpatterns = [
 	#Leave as empty string for base url
 	path('', views.index, name="index"),
-	path('echo234/', views.echo, name="echo"),
+	path('login/', views.auth_login, name="login"),
+	path('register/', views.register, name="register"),
+	# path('register/<str:payload>', views.register, name="register"),
 	path('game', views.game, name="game"),
 	path('give/', views.give, name="give"),
 	path('logout', views.logout_view, name="logout_view"),
 	path('dashboard', views.dashboard, name="dashboard"),
 	path('admins', views.admins, name="admins"),
-	path('telegram/'+ secret, views.telegram, name="telegram"),
+	path('telegram/', views.telegram, name="telegram"),
+	# path('telegram/'+ secret, views.telegram, name="telegram"),
 ]

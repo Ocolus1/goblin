@@ -1,0 +1,672 @@
+{% extends "main/base.html" %} {% load static %} {% block content %}
+<header>
+    <img src="{% static 'main/img/man.png' %}" class="img-fluid head_img" alt="Goblin Hunter">
+    <h1 class="head_text">
+        <span style="color:#90D654">GOBLIN</span>
+        <span style="color:#FF0000">HUNTER</span>
+    </h1>
+</header>
+<main>
+    <section class="section_one">
+        <div class="container">
+            <div class="row justify-content-center ">
+                <div class="col col-7 col_one ">
+                    <div class="outer_div_one">
+                        <div class="inner_div_one">
+                            <div class="user_connect">
+                                {% if request.user.is_authenticated %}
+                                <a class="btn bt_connect" href="{% url 'game' %}" target="_blank" 
+                                style="color:green;" id="connect_btn2" role="button">
+                                    ENTER GAME
+                                    <p id="address" style="color:red;"></p>
+                                </a>
+                                <a href="{% url 'dashboard' %}" class="status">CHECK STATS</a>
+                                {% else %}
+                                <input type="text" class="form-control username" id="username" name="username" 
+                                placeholder="Enter your username to play.">
+                                <button class="btn bt_connect2" onclick="loginWithEth()" id="connect_btn">
+                                    CONNECT WALLET
+                                </button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="div_one_txt">
+                                USE METAMASK OR TRUST WALLET TO CONNECT AND BEGIN PLAYING THE GAME
+                            </div>
+                            <div class="link_out">
+                                <a href="#">
+                                    <img src="{% static 'main/img/app_store2.png' %}" class="l_logo" alt="app store" />
+                                </a>
+                                <a href="#">
+                                    <img src="{% static 'main/img/g_play2.png' %}" class="l_logo" alt="google play" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-3 col_3">
+                    <div class="outer_div_two">
+                        <div class="inner_div_two">
+                            <h4 class="leader_b">LEADERBOARD</h3>
+                            <div>
+                                <p class="l_address">
+                                    <span>1.</span>
+                                    <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>2.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>3.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>4.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>5.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>6.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>7.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>8.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>9.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                                <p class="l_address">
+                                    <span>10.</span>
+                                        <span>OX5637.........8g53.bc<span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container section_two">
+        <div class="row row_three">
+            <div class="col_6">
+                <div class="outer_div_three">
+                    <div class="inner_div_three">
+                        <h3 class="game_status">GAME STATUS</h3>
+                        <div class="data ">
+                            <p>NO OF PLAYERS: <span style="color:#457500">50,023 </span> </p>
+                                    <p>COINS MINTED: <span style="color:#457500">300,023 </span> </p>
+                                    <p>BOXES COLLECTED: <span style="color:#457500">50,023 </span> </p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <section class="container section_three">
+        <div class="row row_three ">
+            <div class="col_4">
+                <div class="outer_div_four">
+                    <div class="inner_div_four">
+                        <button class="btn  bt_whitepaper">WHITEPAPER</button>
+                        <button class="btn  bt_tos">TOS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script type="text/Javascript">
+    window.onload = async () => { 
+        // Init Web3 connected to ETH network 
+        if (window.ethereum) { 
+            window.web3 = new Web3(window.ethereum); 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        }
+        // Load in Localstore key
+        let ad = "{{user.address}}"
+        document.getElementById( "address" ).innerHTML = `ETH Address: ${truncateAddress(ad)}`;  
+    }; 
+
+
+    // Use this function to turn a 42 character ETH address // into an address like 0x345...12345 
+    function truncateAddress(address) { 
+        if (!address) { 
+            return ""; 
+        } 
+        return `${address.substr(0, 5)}...${address.substr( address.length - 5, address.length )}`;
+    } 
+
+    // Display or remove the users know address on the frontend 
+    function showAddress() { 
+        if (!window.userAddress) { 
+            document.getElementById("address").innerText = ""; 
+            document.getElementById("logoutButton").classList.add("hidden"); 
+            return false; 
+        } 
+        document.getElementById("logoutButton").classList.remove("hidden");
+    } 
+
+
+    // remove stored user address and reset frontend 
+    function logout() { 
+        window.userAddress = null; 
+        window.localStorage.removeItem("userAddress"); 
+        showAddress();
+    } 
+
+    async function sendData(userAddress) { 
+        const username = await document.getElementById("username").value;
+        let user = { 
+            username: username, 
+            address: userAddress 
+        } 
+        // console.log(user); 
+        let url = "/echo234/" 
+        let body = JSON.stringify(user) 
+        let res = await fetch(url, { 
+            method: 'POST', 
+            headers: { 
+                "Accept": "application/json", 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{csrftoken}}" 
+            }, 
+            body: body, 
+        })
+    } 
+
+    // Login with Web3 via Metamasks window.ethereum library 
+    async function loginWithEth() { 
+        if (window.web3) { 
+            try {
+                // We use this since ethereum.enable() is deprecated. This method is not 
+                // available in Web3JS - so we call it directly from metamasks' library 
+                const selectedAccount = await window.ethereum.request({ 
+                    method: "eth_requestAccounts", 
+                }).then((accounts) => accounts[0]).catch(() => { 
+                    throw Error("No account selected!"); 
+                }); 
+                await sendData(selectedAccount);
+            } catch (error) { 
+                console.log(error); 
+            } 
+        } else { 
+            alert("No ETH browser extension detected."); 
+        } 
+        window.location.reload(); 
+    }
+
+</script>
+
+{% endblock content %}
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+html, body{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  background-image : url("../img/bg.jpeg");
+  /* background-size : cover; */
+  background-position: center;
+  background-repeat: repeat;
+}
+
+.hid {
+  display: none;
+}
+
+header {
+  margin-top: 2rem;
+}
+
+.head_img {
+  display: inline-block;
+  width: 5rem;
+  height: 5rem;
+}
+
+.head_text {
+  display: inline-block;
+  font-size: 170%;
+  font-weight: bolder;
+}
+
+/* section one */
+.section_one {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.outer_div_one, 
+.outer_div_two,
+.outer_div_three,
+.outer_div_four {
+  background-color: #AA7851;
+  padding: 1rem;
+}
+
+.inner_div_one, 
+.inner_div_two,
+.inner_div_three,
+.inner_div_four {
+  background-color: #C4C4C4;
+}
+
+.col_one {
+  width: 100%;
+  margin: 1rem 2rem;
+}
+
+.inner_div_one {
+  text-align: center;
+  padding: 2rem;
+}
+
+.bt_connect {
+  background: #FFE300;
+  color: #FF0000;
+  padding: .6rem 1rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  border: 3px solid red;
+}
+
+.status {
+  text-decoration: none;
+  color: red;
+  font-weight: bolder;
+  /* border: 3px solid red; */
+  display: block;
+  margin: .5rem auto;
+}
+
+.status:hover {
+  color: green;
+}
+
+.user_connect {
+  text-align: center;
+}
+
+.username {
+  background: #AAAAAA;
+  color: #FFE300;
+  border: none;
+  width: 90%;
+  margin: 1rem  auto;
+  text-align: center;
+}
+
+.username::placeholder {
+  color: #FFE300;
+  text-align: center;
+}
+
+.username:focus {
+  background-color: #AAAAAA;
+}
+
+.bt_connect2 {
+  background: #FFE300;
+  color: #FF0000;
+  padding: .5rem 1rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  margin-top: .1rem;
+  border: none;
+  text-align: center;
+  border-radius: 1rem;
+}
+
+.div_one_txt{
+  margin-bottom: 1.5rem;
+  font-weight: bolder;
+}
+
+.col_3 {
+  width: 100%;
+}
+
+.inner_div_two {
+  text-align: center;
+  padding: 2rem;
+}
+
+.leader_b{
+  color: #FFE300;
+  margin-bottom: 1.5rem;
+}
+
+.l_address {
+  color: #FF0000;
+  font-weight: bolder;
+}
+
+/* section two */
+.section_two {
+  margin-bottom: 2rem;
+  padding: 2rem;
+}
+
+.inner_div_three {
+  padding: 1rem;
+}
+
+.row_three {
+  text-align: center;
+}
+
+.col_6 {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.game_status {
+  color: #FF0000;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  font-weight: bolder;
+}
+
+div.data > p {
+  font-family: monospace;
+  line-height: 22.18px;
+}
+
+
+
+/*section three */
+.section_three {
+  margin-bottom: 8rem;
+  padding: 2rem;
+}
+
+.inner_div_four {
+  padding: 1rem;
+}
+
+.col_4 {
+  width: 100%;
+  margin: 0 auto;
+  /* border: 4px solid black; */
+}
+
+.bt_whitepaper {
+  color: #FF0000;
+  border: 4px solid #AA7851;
+  font-weight: bolder;
+  padding: .5rem .3rem;
+  margin-right: .5rem;
+}
+
+.bt_tos {
+  color: #FF0000;
+  border: 4px solid black;
+  font-weight: bolder;
+  padding: .5rem 1.5rem;
+}
+@media screen and (min-width: 576px) {
+  .head_img {
+      width: 6rem;
+      height: 6rem;
+      margin-right: 5rem;
+  }
+  
+  .head_text {
+      font-size: 200%;
+  }
+
+  .inner_div_one {
+      padding: 3rem;
+  }
+  
+  .bt_connect {
+      margin-bottom: 1.8rem;
+  }
+  
+  .username {
+      width: 80%;
+  }
+  
+  .bt_connect2 {
+      padding: .7rem 1.5rem;
+      margin-bottom: 1.5rem;
+      margin-top: .1rem;
+      border-radius: 1.5rem;
+  }
+  
+  .div_one_txt{
+      margin-bottom: 1.6rem;
+  }
+
+  .leader_b{
+      margin-bottom: 2rem;
+  }
+
+  .section_two {
+      padding: 1rem;
+  }
+  
+  .game_status {
+      margin-top: .5rem;
+      margin-bottom: 1rem;
+  }
+
+  .section_three {
+      padding: 1rem;
+  }
+  
+  .bt_whitepaper {
+      padding: 1rem 1rem;
+      margin-right: 1rem;
+  }
+  
+  .bt_tos {
+      padding: 1rem 3.2rem;
+  }
+  
+}
+
+@media screen and (min-width: 768px) {
+  .head_img {
+      width: 4rem;
+      height: 4rem;
+  }
+
+  .head_text {
+      text-align: center;
+      display: block;
+      font-size: 250%;
+  }
+
+  .section_one {
+      margin: 4rem 0 3rem 0;
+  }
+  
+  .col_one {
+      position: relative;
+      width: 57%;
+      margin: 0;
+      display: inline-block;
+  }
+
+  .col_3 {
+      width: 43%;
+      display: inline-block;
+  }
+  
+  .outer_div_one {
+      position: absolute;
+      top: 20%; 
+      left: 0%;
+  }
+  
+  .inner_div_one {
+      text-align: center;
+      padding: 2rem;
+  }
+  
+  .bt_connect {
+      margin-bottom: 1rem;
+  }
+  
+  .div_one_txt{
+      margin-bottom: 1rem;
+  }
+  
+  .inner_div_two {
+      text-align: center;
+      padding: 2rem;
+  }
+  
+  .leader_b{
+      margin-bottom: 1.5rem;
+  }
+
+  .section_two {
+      margin-bottom: 4rem;
+  }
+  
+  .inner_div_three {
+      padding: 1.5rem;
+  }
+  
+  .row_three {
+      text-align: center;
+  }
+  
+  .col_6 {
+      width: 70%;
+      margin: 0 auto;
+  }
+  
+  .game_status {
+      margin-bottom: 2rem;
+  }
+
+  .section_three {
+      margin-bottom: 8rem;
+  }
+  
+  .inner_div_four {
+      padding: 2rem;
+  }
+  
+  .col_4 {
+      width: 50%;
+      margin: 0 auto;
+  }
+
+  .bt_whitepaper {
+      padding: .5rem .3rem;
+      margin-right: .5rem;
+  }
+  
+  .bt_tos {
+      padding: .5rem 1.5rem;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .outer_div_one, 
+  .outer_div_two,
+  .outer_div_three,
+  .outer_div_four {
+      padding: 2rem;
+  }
+
+  .inner_div_one {
+      padding: 4rem;
+  }
+
+  .inner_div_three {
+      padding: 2rem;
+  }
+
+  .col_6 {
+      width: 60%;
+  }
+
+  .bt_connect {
+      margin-bottom: 1.8rem;
+  }
+
+  .username {
+      width: 70%;
+      margin: 1rem  auto;
+  }
+  
+  .bt_connect2 {
+      padding: .7rem 1.5rem;
+      margin-bottom: 1.5rem;
+      margin-top: .1rem;
+      border-radius: 1.5rem;
+  }
+  
+  .col_4 {
+      width: 43%;
+  }
+
+  .bt_whitepaper {
+      padding: .6rem .3rem;
+      margin-right: .3rem;
+  }
+
+  .bt_tos {
+      padding: .6rem 2rem;
+  }
+}
+@media screen and (min-width: 1024px) {
+  
+  .col_6 {
+      width: 50%;
+  }
+  
+  .col_4 {
+      width: 35%;
+  }
+
+  .bt_whitepaper {
+      padding: 1rem 1rem;
+      margin-right: 1rem;
+  }
+
+  .bt_tos {
+      padding: 1rem 3.2rem;
+  }
+
+  .username {
+      width: 50%;
+      margin: 1rem  auto;
+  }
+  
+  .bt_connect2 {
+      padding: .9rem 2rem;
+      margin-bottom: 1.5rem;
+      margin-top: .1rem;
+      border-radius: 2rem;
+  }
+}

@@ -3,22 +3,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # from django.contrib.auth.models import User
 
 from main.models import Player_detail, Level, User
-
-# Define an inline admin descriptor for Employee model
-# which acts a bit like a singleton
-# class PlayerInline(admin.StackedInline):
-#     model = Player
-#     can_delete = False
-#     verbose_name_plural = 'player'
-
-# # Define a new User admin
-# class UserAdmin(BaseUserAdmin):
-#     inlines = (PlayerInline,)
+# from main.views import Command, Tweet, Telegram, Facebook, Ethaddress, Link, Instagram, Youtube, Reddit
 
 class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
-            "fields": ( "username", "address", "password")
+            "fields": ("username", "address", "payload", "password")
         }),
         ("Permissions", {
             "fields": ("is_active", "is_superuser", "is_staff")
@@ -26,13 +16,13 @@ class UserAdmin(BaseUserAdmin):
     )
     fieldsets = (
         (None, {
-            "fields": ("username", "address", "password")
+            "fields": ("username", "address", "payload", "password")
         }),
         ("Permissions", {
             "fields": ("is_active", "is_superuser", "is_staff")
         })
     )
-    list_display = ["username", "address"]
+    list_display = ["username", "address", "payload", "referrals"]
     search_fields = ("address", "username")
     ordering = ("address",)
 
@@ -41,3 +31,13 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(Player_detail)
 admin.site.register(Level)
+# admin.site.register(Email)
+# admin.site.register(Command)
+# admin.site.register(Tweet)
+# admin.site.register(Telegram)
+# admin.site.register(Facebook)
+# admin.site.register(Ethaddress)
+# admin.site.register(Link)
+# admin.site.register(Instagram)
+# admin.site.register(Youtube)
+# admin.site.register(Reddit)

@@ -43,6 +43,8 @@ class User(AbstractUser):
     objects = UserAccountManager()
 
     def __str__(self):
+        if self.address==None:
+            return "ERROR-ADDRESS NAME IS NULL"
         return self.address
 
     # def __init__(self, *args, **kwargs):
@@ -83,7 +85,7 @@ class Player_detail(models.Model):
     level = models.ForeignKey("Level", related_name="player_detail", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.user.address
+        return self.user.address or ' '
 
 
 class Level(models.Model):
@@ -91,7 +93,7 @@ class Level(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f"{self.num}"
+        return f"{self.num}" or ' '
 
     @property
     def get_comments(self):

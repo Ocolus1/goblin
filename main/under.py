@@ -1,59 +1,75 @@
 # def _start():
     
-def _start():
-    return """
-Hi!
-
-I am the Vidstatus Airdrop Bot.
-
-If you Complete all the Bounty tasks, You will receive 150 VID tokens.
-
-1. Join the VID Facebook page - https://www.facebook.com/Vidstatus-Platform-101335504772670/
-
-2. Follow VID Official Twitter - https://twitter.com/vidstatusio
-
-3. Join VID Telegram Group - https://t.me/vidstatusio
-
-4.Join  VID Telegram channel - https://t.me/vidstatusioann
+def _start(fname, data = "*☑️ Done Subscribed! Click Joined*"):
+    return f"""
+*👋 Dear {fname} Welcome to the Goblin Hunter Airdrop bot*
 
 
-Click /bountyoptions to begin
-    
+*📢 Airdrop Rules*
+**
+*✏️📖 Step-by-step guide:* 
+*👉Mandatory Task💧*
+*🔹Join Value Finance Group* @goblinHonter
+*🔹Follow Twitter, like , RT & tag 3 friends  * twitter.com/goblinhunterxyz
+*🔹️ Subscribe To Our YouTube*
+https://youtube.com/channel/UCH6Xm5cV-sVD70ywoCWzD5Q
+*🔹️ Follow our Instagram page*
+*🔹️ Follow our Medium page & clap *
+*🔹️ Follow our Facebook page*
+*🔹Join our Telegram Channel*
+*🔹️ Submit Your Bep20 Wallet address*
+**
+* Optional:*
+*🔹️ Follow us on Reddit*
+*(Note: Must complete all task then click check button)*
+
+{data}
 """
 
 
+def join_airdrop(fname):
+    return f"""
+*🗣 Hello, {fname}! I am your friendly Value Finance Airdrop Bot*
 
-def _bountyoptions():
+*✅ Please do the required tasks to be eligible to get airdrop tokens.*
+
+*🔸 For Joining - Get - 3000 $GOB*
+*⭐️ For each referral - Get - 200 $GOB*
+
+*📘 By Participating you are agreeing to the Goblin Hunter (Airdrop) Program Terms and Conditions. Please see pinned post for more information.*
+
+*Click "Join Airdrop" to proceed*
+"""
+
+def _airdrop():
     return """
-Enter your details ONLY after completing the above tasks.
+*🔹 Total to earn per participant = 3000 $GOB*
+*🔹*
+*🔹 referral = 200 $GOB*
 
-Click /twitter to enter your twitter username
-Click /twitterlink to enter your twitter link
-Click /mytwitter to get your twitter username 
+*🌐 Website: https://goblin hunter.xyz/*
+*📼 Audit: in progress *
+*📘 Presale: Upcoming*
+*📅 Airdrop end date: 30th, February 2022*
+*🏦 Distribution date: 30th March 2022*
 
-Click /telegram to enter your telegram username 
-Click /mytelegram to get your telegram username 
+*📢 Airdrop Rules*
 
-Click /facebook to enter your facebook name
-Click /myfacebook to get your facebook name
+*✏️📖 Step-by-step guide:*
+*Mandatory Task *
+*🔹Join Goblin Hunter Group & Channel* @goblinHonter
+*🔹Follow Twitter, like , RT & tag 3 friends  *
+*🔹️ Subscribe To Our YouTube*
+*🔹️ Follow our Instagram *
+*🔹️ Follow our Medium page & clap *
+*🔹️ Follow our Facebook *
+*🔹️ Submit Your Bep20 Wallet address*
 
-Click /instagram to enter your instagram name
-Click /myinstagram to get your instagram name
+*Complete all task to earn 3000 $GOB*
+*✏️Note: Airdrop ends at 10k participants *
 
-Click /youtube to enter your youtube name
-Click /myyoutube to get your youtube name
+*Information (short about text)*
+*Goblin Hunter is a Blockchain gaming platform that allows users to trade in game items and participate in a decentralized gaming ecosystem l.*
 
-Click /reddit to enter your reddit name
-Click /myreddit to get your reddit name
-
-Click /ethaddress to enter your wallet address
-Click /myethaddress to get your wallet address
-
-Click /mylink to get your refferal link
-
-
-Click /reflist to see how many people you refferred
-
-TOP
-Get TOP 10: /top
+*Complete all tasks then click “Submit Details” to verify you have completed the tasks.*
 """

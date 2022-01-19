@@ -8,13 +8,14 @@ from django.contrib.auth.decorators import login_required
 from main.utils import saveData
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
-from .under import _start, _bountyoptions
+from .under import _start, join_airdrop, _airdrop
 import json
 import csv
 from django.db import models
 import telepot
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 import time
+import random
 import string
 from random import choices
 
@@ -24,10 +25,10 @@ domain = settings.DOM
 token = settings.TOKEN
 secret = settings.SECRET
 # webhook_url = f"https://goblin.cypherspot.dev/telegram/{secret}/"
-webhook_url = f"https://b999-160-152-28-5.ngrok.io/telegram/"
+webhook_url = f"https://74f7-160-152-182-81.ngrok.io/telegram/"
 bot = telepot.Bot(token)
-if webhook_url != bot.getWebhookInfo()['url']:
-    bot.setWebhook(webhook_url)
+# if webhook_url != bot.getWebhookInfo()['url']:
+#     bot.setWebhook(webhook_url)
 
 User = get_user_model()
 
@@ -35,6 +36,11 @@ User = get_user_model()
 def index(request):
     context = {}
     return render(request, 'main/index.html', context)
+
+
+def tokenomics(request):
+    context = {}
+    return render(request, 'main/tokenomics.html', context)
 
 def auth_login(request):
     exists = False
@@ -147,51 +153,54 @@ def telegram(request):
         if token:
             try:
                 payload = json.loads(request.body.decode('utf-8'))
+                # print(payload, "whoa")
             except ValueError:
                 return HttpResponseBadRequest('Invalid request body')
-            
-            chat_id = payload['message']['chat']['id']
-            fname = payload["message"]["chat"]["first_name"]
-            cmd = payload['message'].get('text')  # command
+            try:
+                chat_id = payload['message']['chat']['id']
+                fname = payload["message"]["chat"]["first_name"]
+                cmd = payload['message'].get('text') 
+            except:
+                chat_id = payload['callback_query']['from']['id']
+                fname = payload['callback_query']['from']['first_name']
+                cmd = payload['callback_query']['data']
             commands = {
                 '/start': _start,
                 '/help': _help,
-                '/bountyoptions': _bountyoptions,
-                '/twitter': _twitter(chat_id),
-                '/twitterlink': _tw_link(chat_id),
-                '/mytwitter': _mytwitter(chat_id),
-                '/changetwitter': _twitter(chat_id),
-                '/telegram': _tele(chat_id),
-                '/mytelegram': _mytele(chat_id),
-                '/changetele': _tele(chat_id),
-                '/facebook': _facebook(chat_id),
-                '/myfacebook': _myfacebook(chat_id),
-                '/changeface': _facebook(chat_id),
-                '/instagram': _instagram(chat_id),
-                '/myinstagram': _myinstagram(chat_id),
-                '/changeinsta': _instagram(chat_id),
-                '/youtube': _youtube(chat_id),
-                '/myyoutube': _myyoutube(chat_id),
-                '/changetube': _youtube(chat_id),
-                '/reddit': _reddit(chat_id),
-                '/myreddit': _myreddit(chat_id),
-                '/changereddit': _reddit(chat_id),
-                '/ethaddress': _ethaddress(chat_id),
-                '/myethaddress': _myethaddress(chat_id),
-                '/changeeth': _ethaddress(chat_id),
-                '/mylink': _mylink(chat_id, fname),
-                '/reflist': _reflist(chat_id),
-                '/top': _top(chat_id),
-                '/clear': _clear(chat_id),
                 # '/sheldoncooper': _exports(chat_id),
             }
-            if payload['message'].get('entities'):
-                if Command.objects.filter(chat_id=chat_id).exists():
-                    comma = Command.objects.get(chat_id=chat_id)
-                    comma.command = cmd.split()[0].lower()
-                    comma.save()
+            try:
+                if payload['message'].get('entities'):
+                    if Command.objects.filter(chat_id=chat_id).exists():
+                        comma = Command.objects.get(chat_id=chat_id)
+                        comma.command = cmd.split()[0].lower()
+                        comma.save()
+                    else:
+                        Command.objects.create(chat_id=chat_id, command=cmd.split()[0].lower())
+
+            except:
+                pass
+
+            try:
+                if Verify.objects.filter(chat_id=chat_id).exists():
+                    pass
                 else:
-                    Command.objects.create(chat_id=chat_id, command=cmd.split()[0].lower())
+                    Verify.objects.create(chat_id=chat_id, check="❌ Not verified")
+
+                if cmd in ['setwallet', 'changewallet', 'settele',
+                'changetele', 'settweet', 'changetweet',
+                'tweetlink', 'setfacebook', 'changefacebook',
+                'setinstagram', 'changeinstagram', 'setyoutube',
+                'changeyoutube', 'setreddit', 'changereddit', 'verify'
+                ]:
+                    if Cmd.objects.filter(chat_id=chat_id).exists():
+                        comma = Cmd.objects.get(chat_id=chat_id)
+                        comma.cmd = cmd.split()[0].lower()
+                        comma.save()
+                    else:
+                        Cmd.objects.create(chat_id=chat_id, cmd=cmd.split()[0].lower())
+            except:
+                pass
             func = commands.get(cmd.split()[0].lower()) 
             link = Link.objects.all()
             for lin in link:
@@ -202,58 +211,262 @@ def telegram(request):
                         link = Link.objects.get(gen_c=pay)
                         chat = Link.objects.filter(chat_id=chat_id)
                         if link and not chat:
-                            link.referal += 1
+                            link.referral += 1
+                            link.points += 200
                             link.save()
                             try:
                                 bot.sendMessage(chat_id, func, parse_mode='Markdown')
                             except:
-                                bot.sendMessage(chat_id, func(), parse_mode='Markdown')
-                            time.sleep(1)
-                            # bot.sendMessage(chat_id, "You have been added to your referal")
+                                if Verify.objects.filter(chat_id=chat_id).exists():
+                                    verify = Verify.objects.get(chat_id=chat_id)
+                                    if verify.check == "▶️ You have been Verified":
+                                        key = InlineKeyboardMarkup(inline_keyboard=[
+                                            [InlineKeyboardButton(text='⚜️ Join Airdrop ⚜️', callback_data='airdrop')],
+                                        ])
+                                        bot.sendMessage(chat_id, join_airdrop(fname), 
+                                        reply_markup=key, parse_mode="Markdown")
+                                    elif verify.check == "❌ Not verified":
+                                        key = InlineKeyboardMarkup(inline_keyboard=[
+                                            [InlineKeyboardButton(text='⚜️ Verify Me ⚜️', callback_data='verify')],
+                                        ])
+                                        bot.sendMessage(chat_id, _start(fname, "*☑️ Are you verified! Click Verify Me*"),
+                                            reply_markup=key, parse_mode="Markdown")
+                                    # time.sleep(1)
+                            # bot.sendMessage(chat_id, "You have been added to your referral")
                         elif link and chat:
                             bot.sendMessage(chat_id, "User already exist")
                         return JsonResponse({}, status=200)
                     return JsonResponse({}, status=200)
+                elif cmd == "/start":
+                    if Verify.objects.filter(chat_id=chat_id).exists():
+                        verify = Verify.objects.get(chat_id=chat_id)
+                        if verify.check == "▶️ You have been Verified":
+                            key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Join Airdrop ⚜️', callback_data='airdrop')],
+                            ])
+                            # key = ReplyKeyboardRemove(remove_keyboard=True)
+                            bot.sendMessage(chat_id, join_airdrop(fname), 
+                            reply_markup=key, parse_mode="Markdown")
+                        elif verify.check == "❌ Not verified":
+                            key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Verify Me ⚜️', callback_data='verify')],
+                            ])
+                            bot.sendMessage(chat_id, _start(fname, "*☑️ Are you verified! Click Verify Me*"),
+                                reply_markup=key, parse_mode="Markdown")
+                elif cmd == "airdrop":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                        [InlineKeyboardButton(text='⚜️ Submit Details ⚜️', callback_data='joined')],
+                    ])
+                    bot.sendMessage(chat_id, _airdrop(), 
+                    reply_markup=key, parse_mode="Markdown")
+                elif cmd == "verify":
+                    if Verify.objects.filter(chat_id=chat_id).exists():
+                        verify = Verify.objects.get(chat_id=chat_id)
+                        if verify.check == "▶️ You have been Verified":
+                            msg = "▶️ You're a verified user"
+                            bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                        elif verify.check == "❌ Not verified":
+                            x , y = rand_m()
+                            ver = x + y
+                            verify.ver = ver
+                            verify.save()
+                            msg = f"*Your verification question is:* \n \n *What is {x} + {y} ?*"
+                            bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                            
+                elif cmd == "joined" or cmd == "🔙Back":
+                    check = check_joined(chat_id)
+                    if check == "▶️ Refer and Earn GOB!":
+                        key = ReplyKeyboardMarkup(keyboard=[
+                            [
+                                KeyboardButton(text="💰 Balance"),
+                            ],
+                            [
+                                KeyboardButton(text="👫 Referral"),
+                                KeyboardButton(text="⚙️Set wallet"),
+                            ],
+                            [
+                                KeyboardButton(text="💬 Social Media"),
+                                KeyboardButton(text="💥 Top 10"),
+                            ],
+                        ],
+                            resize_keyboard = True
+                        )
+                        bot.sendMessage(chat_id, "▶️ Refer and Earn GOB!", 
+                        reply_markup=key, parse_mode="Markdown")
+                        
+                        
+                    elif check == "❌ Must join all channel":
+                        bot.sendMessage(chat_id, "❌ Must join all channel", 
+                        parse_mode="Markdown")
+                elif cmd == "⚙️Set wallet":
+                    if Ethaddress.objects.filter(chat_id=chat_id).exists():
+                        eth = Ethaddress.objects.get(chat_id=chat_id)
+                        add = eth.address
+                        msg = (f"""
+                            *Account Settings ⚙️ \n \n🤴 User : {fname} \n🆔 User ID : {chat_id} \nWallet : {add}*
+                        """)
+                        key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Change wallet address ✏️', callback_data='changewallet')],
+                        ])
+                        bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                    else :
+                        msg = (f"""
+                            *Account Settings ⚙️ \n \n🤴 User : {fname} \n🆔 User ID : {chat_id} \nWallet : You have not set your wallet address*
+                        """)
+                        key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set wallet ✏️', callback_data='setwallet')],
+                        ])
+                        bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setwallet" or cmd == "changewallet":
+                    msg = "*✏️Send your BSC wallet address*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "💰 Balance":
+                    if Link.objects.filter(chat_id=chat_id).exists():
+                        link = Link.objects.get(chat_id=chat_id)
+                        msg = f"🤴 User : {link.fname} \n \n 💰 Balance : {link.points} points"
+                        bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                    else:
+                        msg = "*Fill your social media info to get your balance*"
+                        bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "👫 Referral":
+                    bot.sendMessage(chat_id, _mylink(chat_id, fname), parse_mode='Markdown')
+                elif cmd == "💥 Top 10":
+                    bot.sendMessage(chat_id, _top(chat_id), parse_mode='Markdown')
+                elif cmd == "💬 Social Media":
+                    key = ReplyKeyboardMarkup(keyboard=[
+                            [
+                                KeyboardButton(text="📞Telegram"),
+                                KeyboardButton(text="💬Twitter"),
+                            ],
+                            [
+                                KeyboardButton(text="📱Facebook"),
+                                KeyboardButton(text="📷Instagram"),
+                            ],
+                            [
+                                KeyboardButton(text="☎️Youtube"),
+                                KeyboardButton(text="🖊️Reddit"),
+                            ],
+                            [
+                                KeyboardButton(text="🔙Back"),
+                            ],
+                        ],
+                            resize_keyboard = True
+                    )
+                    msg = "*Welcome to the social media menu*"
+                    bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                elif cmd == "📞Telegram":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='settele')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changetele')],
+                    ])
+                    bot.sendMessage(chat_id , _mytele(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "settele" or cmd == "changetele":
+                    msg = "*Input your telegram username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "💬Twitter":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='settweet')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changetweet')],
+                            [InlineKeyboardButton(text='Set Tweet link ✏️', callback_data='tweetlink')],
+                    ])
+                    bot.sendMessage(chat_id , _mytwitter(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "settweet" or cmd == "changetweet":
+                    msg = "*Input your twitter username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "tweetlink":
+                    msg = "*Input your twitter username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "📱Facebook":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setfacebook')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changefacebook')],
+                    ])
+                    bot.sendMessage(chat_id , _myfacebook(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setfacebook" or cmd == "changefacebook":
+                    msg = "*Input your Facebook username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "📷Instagram":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setinstagram')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changeinstagram')],
+                    ])
+                    bot.sendMessage(chat_id , _myinstagram(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setinstagram" or cmd == "changeinstagram":
+                    msg = "*Input your Instagram username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "☎️Youtube":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setyoutube')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changeyoutube')],
+                    ])
+                    bot.sendMessage(chat_id , _myyoutube(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setyoutube" or cmd == "changeyoutube":
+                    msg = "*Input your Youtube username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "🖊️Reddit":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setreddit')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changereddit')],
+                    ])
+                    bot.sendMessage(chat_id , _myreddit(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setreddit" or cmd == "changereddit":
+                    msg = "*Input your Reddit username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
                 elif func and not cmd.endswith(gen_c):
-                    print(func, "man")
-                    print(cmd, "man")
                     try:
                         bot.sendMessage(chat_id, func, parse_mode='Markdown')
                     except:
                         bot.sendMessage(chat_id, func(), parse_mode='Markdown')
                 else:
-                    if Command.objects.filter(chat_id=chat_id).exists():
-                        comma = Command.objects.get(chat_id=chat_id)
-                        if comma.command == "/twitter":
-                            bot.sendMessage(chat_id, _twitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetwitter":
-                            bot.sendMessage(chat_id, _changetwitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/twitterlink":
-                            bot.sendMessage(chat_id, _changetwitterlink_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/telegram":
-                            bot.sendMessage(chat_id, _tele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetele":
-                            bot.sendMessage(chat_id, _changetele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/facebook":
-                            bot.sendMessage(chat_id, _facebook_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeface":
-                            bot.sendMessage(chat_id, _changeface_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/instagram":
-                            bot.sendMessage(chat_id, _instagram_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeinsta":
-                            bot.sendMessage(chat_id, _changeinsta_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/youtube":
-                            bot.sendMessage(chat_id, _youtube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetube":
-                            bot.sendMessage(chat_id, _changetube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/reddit":
-                            bot.sendMessage(chat_id, _reddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changereddit":
-                            bot.sendMessage(chat_id, _changereddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/ethaddress":
+                    if Cmd.objects.filter(chat_id=chat_id).exists():
+                        comma = Cmd.objects.get(chat_id=chat_id)
+                        if comma.cmd == "setwallet":
                             bot.sendMessage(chat_id, _ethaddress_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeeth":
+                        elif comma.cmd == "verify":
+                            verify = Verify.objects.get(chat_id=chat_id)
+                            if cmd == str(verify.ver):
+                                if Verify.objects.filter(chat_id=chat_id).exists():
+                                    verify = Verify.objects.get(chat_id=chat_id)
+                                    verify.check = "▶️ You have been Verified"
+                                    verify.save()
+                                msg = "▶️ You have been Verified"
+                                bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                                key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Joined ⚜️', callback_data='joined')],
+                                ])
+                                bot.sendMessage(chat_id, _start(fname),
+                                    reply_markup=key, parse_mode="Markdown")
+                            else:
+                                msg = "❌ Not verified"
+                                bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                        elif comma.cmd == "changewallet":
                             bot.sendMessage(chat_id, _changeeth_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "settele":
+                            bot.sendMessage(chat_id, _tele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changetele":
+                            bot.sendMessage(chat_id, _changetele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "settweet":
+                            bot.sendMessage(chat_id, _twitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changetweet":
+                            bot.sendMessage(chat_id, _changetwitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "tweetlink":
+                            bot.sendMessage(chat_id, _changetwitterlink_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setfacebook":
+                            bot.sendMessage(chat_id, _facebook_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changefacebook":
+                            bot.sendMessage(chat_id, _changeface_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setinstagram":
+                            bot.sendMessage(chat_id, _instagram_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changeinstagram":
+                            bot.sendMessage(chat_id, _changeinsta_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setyoutube":
+                            bot.sendMessage(chat_id, _youtube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changeyoutube":
+                            bot.sendMessage(chat_id, _changetube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setreddit":
+                            bot.sendMessage(chat_id, _reddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changereddit":
+                            bot.sendMessage(chat_id, _changereddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
                         else:
                             bot.sendMessage(chat_id, error_msg)
                 return JsonResponse({}, status=200)
@@ -262,17 +475,56 @@ def telegram(request):
                 print(func, "man")
                 print(cmd, "man")
                 if cmd == "/start":
-                    key = ReplyKeyboardMarkup(keyboard=[
-                        [
-                            KeyboardButton(text="Image"),
-                            KeyboardButton(text="Photo"),
-                            KeyboardButton(text="Video")
-                        ]
-                    ],
-                        resize_keyboard = True
-                    )
-                    bot.sendMessage(chat_id, _start(),
+                    if Verify.objects.filter(chat_id=chat_id).exists():
+                        verify = Verify.objects.get(chat_id=chat_id)
+                        if verify.check == "▶️ You have been Verified":
+                            key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Join Airdrop ⚜️', callback_data='airdrop')],
+                            ])
+                            bot.sendMessage(chat_id, join_airdrop(fname), 
+                            reply_markup=key, parse_mode="Markdown")
+                        elif verify.check == "❌ Not verified":
+                            key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Verify Me ⚜️', callback_data='verify')],
+                            ])
+                            bot.sendMessage(chat_id, _start(fname, "*☑️ Are you verified! Click Verify Me*"),
+                                reply_markup=key, parse_mode="Markdown")
+                elif cmd == "verify":
+                    if Verify.objects.filter(chat_id=chat_id).exists():
+                        verify = Verify.objects.get(chat_id=chat_id)
+                        if verify.check == "▶️ You have been Verified":
+                            msg = "▶️ You're a verified user"
+                            bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                        elif verify.check == "❌ Not verified":
+                            x , y = rand_m()
+                            ver = x + y
+                            verify.ver = ver
+                            verify.save()
+                            msg = f"*Your verification question is:* \n \n *What is {x} + {y} ?*"
+                            bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                elif cmd == "joined":
+                    check = check_joined(chat_id)
+                    if check == "▶️ Refer and Earn GOB!":
+                        key = ReplyKeyboardMarkup(keyboard=[
+                            [
+                                KeyboardButton(text="💰 Balance"),
+                            ],
+                            [
+                                KeyboardButton(text="👫 Referral"),
+                                KeyboardButton(text="⚙️Set wallet"),
+                            ],
+                            [
+                                KeyboardButton(text="💬 Social Media"),
+                                KeyboardButton(text="💥 Top 10"),
+                            ],
+                        ],
+                            resize_keyboard = True
+                        )
+                        bot.sendMessage(chat_id, "▶️ Refer and Earn GOB!", 
                         reply_markup=key, parse_mode="Markdown")
+                    elif check == "❌ Must join all channel":
+                        bot.sendMessage(chat_id, "❌ Must join all channel", 
+                        parse_mode="Markdown")
                 elif func :
                     try:
                         bot.sendMessage(chat_id, func, parse_mode='Markdown')
@@ -280,44 +532,78 @@ def telegram(request):
                     except:
                         bot.sendMessage(chat_id, func(), parse_mode='Markdown')
                 else:
-                    if Command.objects.filter(chat_id=chat_id).exists():
-                        comma = Command.objects.get(chat_id=chat_id)
-                        if comma.command == "/twitter":
-                            bot.sendMessage(chat_id, _twitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetwitter":
-                            bot.sendMessage(chat_id, _changetwitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/twitterlink":
-                            bot.sendMessage(chat_id, _changetwitterlink_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/telegram":
-                            bot.sendMessage(chat_id, _tele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetele":
-                            bot.sendMessage(chat_id, _changetele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/facebook":
-                            bot.sendMessage(chat_id, _facebook_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeface":
-                            bot.sendMessage(chat_id, _changeface_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/instagram":
-                            bot.sendMessage(chat_id, _instagram_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeinsta":
-                            bot.sendMessage(chat_id, _changeinsta_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/youtube":
-                            bot.sendMessage(chat_id, _youtube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changetube":
-                            bot.sendMessage(chat_id, _changetube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/reddit":
-                            bot.sendMessage(chat_id, _reddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changereddit":
-                            bot.sendMessage(chat_id, _changereddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/ethaddress":
+                    if Cmd.objects.filter(chat_id=chat_id).exists():
+                        comma = Cmd.objects.get(chat_id=chat_id)
+                        if comma.cmd == "setwallet":
                             bot.sendMessage(chat_id, _ethaddress_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
-                        elif comma.command == "/changeeth":
+                        elif comma.cmd == "verify":
+                            verify = Verify.objects.get(chat_id=chat_id)
+                            if cmd == str(verify.ver):
+                                if Verify.objects.filter(chat_id=chat_id).exists():
+                                    verify = Verify.objects.get(chat_id=chat_id)
+                                    verify.check = "▶️ You have been Verified"
+                                    verify.save()
+                                msg = "▶️ You have been Verified"
+                                bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                                key = InlineKeyboardMarkup(inline_keyboard=[
+                                [InlineKeyboardButton(text='⚜️ Joined ⚜️', callback_data='joined')],
+                                ])
+                                bot.sendMessage(chat_id, _start(fname),
+                                    reply_markup=key, parse_mode="Markdown")
+                            else:
+                                msg = "❌ Not verified"
+                                bot.sendMessage(chat_id, msg, parse_mode="Markdown")
+                        elif comma.cmd == "changewallet":
                             bot.sendMessage(chat_id, _changeeth_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "settele":
+                            bot.sendMessage(chat_id, _tele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changetele":
+                            bot.sendMessage(chat_id, _changetele_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "settweet":
+                            bot.sendMessage(chat_id, _twitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changetweet":
+                            bot.sendMessage(chat_id, _changetwitter_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "tweetlink":
+                            bot.sendMessage(chat_id, _changetwitterlink_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setfacebook":
+                            bot.sendMessage(chat_id, _facebook_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changefacebook":
+                            bot.sendMessage(chat_id, _changeface_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setinstagram":
+                            bot.sendMessage(chat_id, _instagram_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changeinstagram":
+                            bot.sendMessage(chat_id, _changeinsta_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setyoutube":
+                            bot.sendMessage(chat_id, _youtube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changeyoutube":
+                            bot.sendMessage(chat_id, _changetube_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "setreddit":
+                            bot.sendMessage(chat_id, _reddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
+                        elif comma.cmd == "changereddit":
+                            bot.sendMessage(chat_id, _changereddit_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
                         else:
                             bot.sendMessage(chat_id, error_msg)
             return JsonResponse({}, status=200)
         else :
             return HttpResponseForbidden('Invalid token')
 
+
+class Cmd(models.Model):
+    chat_id = models.IntegerField(default=0)
+    cmd = models.CharField(max_length=400)
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.chat_id}'
+
+class Verify(models.Model):
+    chat_id = models.IntegerField(default=0)
+    check = models.CharField(max_length=400, default="❌ Not verified")
+    ver = models.IntegerField(default=0)
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.chat_id}'
 
 class Command(models.Model):
     chat_id = models.IntegerField(default=0)
@@ -403,8 +689,12 @@ class Link(models.Model):
     ethaddress = models.CharField(max_length=400, default="ethuser")
     fname = models.CharField(max_length=400)
     gen_c = models.CharField(max_length=400, unique=True)
-    referal = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+    referral = models.IntegerField(default=0)
     pub_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.chat_id}'
 
     def __init__(self, *args, **kwargs):
         super(Link, self).__init__(*args, **kwargs)
@@ -437,11 +727,10 @@ class Link(models.Model):
 
 def _help():
     return """
-/twitter \\- Input your twitter username
-/clear \\- clear Referal List
-/reflist \\- view my Referrals List
-/mylink \\- get my affiliate link
-/start \\- start
+/start - start
+Not a recognised command - Say What?
+👫 Referral - Simple refer and earn!
+💰Balance - Do tasks and earn!
 """
 
 # func that sends msg to the usr
@@ -449,28 +738,43 @@ def send_msg(chat_id, msg_text):
     response = bot.sendMessage(chat_id, msg_text)
     return response
 
+def check_joined(chat_id):
+    channel = "@goblinHonter"
+    try:
+        check = bot.getChatMember(chat_id=channel, user_id=chat_id)
+        if check['status'] == "member" or check['status'] == "creator":
+            return "▶️ Refer and Earn GOB!"
+        else:
+            return "❌ Must join all channel"
+    except telepot.exception.TelegramError as e:
+        return "❌ Must join all channel"
+
+def rand_m():
+    x = random.randint(1, 10)
+    y = random.randint(1, 10)
+    return x, y
+
 # Telegram
 def _mytele(chat_id):
     chat_id = chat_id
     if Telegram.objects.filter(chat_id=chat_id).exists(): 
         result = Telegram.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username \\- {} \n /changetele \\- to change telegram username".format(user)
+        tot = "*🤴 Your username - {} *".format(user)
         return tot
     else:
-        msg = "You do not have a telegram handle \n Click here /telegram"
+        msg = "*You do not have a telegram handle.*"
         return msg
-
-def _tele(chat_id):
-    msg = "Input your telegram username"
-    return msg
 
 def _tele_cn(chat_id, text):
     try:
-        Telegram.objects.create(chat_id=chat_id, username=text)
+        if Telegram.objects.filter(chat_id=chat_id).exists():
+            return "*You've already set up your username*"
+        else:
+            Telegram.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred.*"
+    return "Telegram Username is saved"
 
 def _changetele_cn(chat_id, text):
     try:
@@ -479,7 +783,7 @@ def _changetele_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Telegram Username is saved"
 
 #twitter
 def _mytwitter(chat_id):
@@ -487,26 +791,21 @@ def _mytwitter(chat_id):
     if Tweet.objects.filter(chat_id=chat_id).exists(): 
         result = Tweet.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username - {} \n /changetwitter - to change twitter username".format(user)
+        tot = "*🤴 Your username - {} *".format(user)
         return tot
     else:
-        msg = "You do not have a twitter handle \n Click here /twitter"
+        msg = "*You do not have a twitter handle.*"
         return msg
-
-def _twitter(chat_id):
-    msg = "Input your twitter username"
-    return msg
-
-def _tw_link(chat_id):
-    msg = "Input your retwitter link"
-    return msg
 
 def _twitter_cn(chat_id, text):
     try:
-        Tweet.objects.create(chat_id=chat_id, username=text)
+        if Tweet.objects.filter(chat_id=chat_id).exists():
+            return "*You've already set up your username*"
+        else:
+            Tweet.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred.*"
+    return "Twitter Username is saved"
 
 def _changetwitter_cn(chat_id, text):
     try:
@@ -515,7 +814,7 @@ def _changetwitter_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Twitter Username is saved"
 
 def _changetwitterlink_cn(chat_id, text):
     try:
@@ -532,22 +831,21 @@ def _myfacebook(chat_id):
     if Facebook.objects.filter(chat_id=chat_id).exists(): 
         result = Facebook.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username \\- {} \n /changeface \\- to change facebook username".format(user)
+        tot = "*🤴 Your username - {}*".format(user)
         return tot
     else:
-        msg = "You do not have a facebook handle \n Click here /facebook"
+        msg = "*You do not have a facebook handle.*"
         return msg
-
-def _facebook(chat_id):
-    msg = "Input your Facebook username"
-    return msg
 
 def _facebook_cn(chat_id, text):
     try:
-        Facebook.objects.create(chat_id=chat_id, username=text)
+        if Facebook.objects.filter(chat_id=chat_id).exists():
+            return "*You've already set up your username*"
+        else:
+            Facebook.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred.*"
+    return "Facebook Username is saved"
 
 def _changeface_cn(chat_id, text):
     try:
@@ -556,7 +854,7 @@ def _changeface_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Facebook Username is saved"
 
 # Instagram
 def _myinstagram(chat_id):
@@ -564,22 +862,21 @@ def _myinstagram(chat_id):
     if Instagram.objects.filter(chat_id=chat_id).exists(): 
         result = Instagram.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username \\- {} \n /changeinsta \\- to change Instagram username".format(user)
+        tot = "*🤴 Your username - {} *".format(user)
         return tot
     else:
-        msg = "You do not have a instagram handle \n Click here /instagram"
+        msg = "*You do not have a instagram handle.*"
         return msg
-
-def _instagram(chat_id):
-    msg = "Input your Instagram username"
-    return msg
 
 def _instagram_cn(chat_id, text):
     try:
-        Instagram.objects.create(chat_id=chat_id, username=text)
+        if Instagram.objects.filter(chat_id=chat_id).exists(): 
+            return "*You've already set up your username*"
+        else:
+            Instagram.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred*"
+    return "Instagram Username is saved"
 
 def _changeinsta_cn(chat_id, text):
     try:
@@ -588,7 +885,7 @@ def _changeinsta_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Instagram Username is saved"
 
 # Youtube
 def _myyoutube(chat_id):
@@ -596,22 +893,21 @@ def _myyoutube(chat_id):
     if Youtube.objects.filter(chat_id=chat_id).exists(): 
         result = Youtube.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username \\- {} \n /changetube \\- to change Youtube username".format(user)
+        tot = "*🤴 Your username - {} *".format(user)
         return tot
     else:
-        msg = "You do not have a youtube handle \n Click here /youtube"
+        msg = "*You do not have a youtube handle.*"
         return msg
-
-def _youtube(chat_id):
-    msg = "Input your Youtube username"
-    return msg
 
 def _youtube_cn(chat_id, text):
     try:
-        Youtube.objects.create(chat_id=chat_id, username=text)
+        if Youtube.objects.filter(chat_id=chat_id).exists(): 
+            return "*You've already set up your username*"
+        else:
+            Youtube.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred*"
+    return "Youtube Username is saved"
 
 def _changetube_cn(chat_id, text):
     try:
@@ -620,7 +916,7 @@ def _changetube_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Youtube Username is saved"
 
 # Reddit
 def _myreddit(chat_id):
@@ -628,22 +924,21 @@ def _myreddit(chat_id):
     if Reddit.objects.filter(chat_id=chat_id).exists(): 
         result = Reddit.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "Your username \\- {} \n /changereddit \\- to change Reddit username".format(user)
+        tot = "*🤴 Your username \\- {} .*".format(user)
         return tot
     else:
-        msg = "You do not have a reddit handle \n Click here /reddit"
+        msg = "*You do not have a reddit handle.*"
         return msg
-
-def _reddit(chat_id):
-    msg = "Input your Reddit username"
-    return msg
 
 def _reddit_cn(chat_id, text):
     try:
-        Reddit.objects.create(chat_id=chat_id, username=text)
+        if Reddit.objects.filter(chat_id=chat_id).exists(): 
+            return "*You've already set up your username*"
+        else:
+            Reddit.objects.create(chat_id=chat_id, username=text)
     except:
-        return "An error occurred"
-    return "Username is saved"
+        return "*An error occurred*"
+    return "Reddit Username is saved"
 
 def _changereddit_cn(chat_id, text):
     try:
@@ -652,41 +947,28 @@ def _changereddit_cn(chat_id, text):
         result.save()
     except:
         return "An error occurred"
-    return "Username is saved"
+    return "Reddit Username is saved"
 
 
 # Bsc address
-def _myethaddress(chat_id):
-    chat_id = chat_id
-    if Ethaddress.objects.filter(chat_id=chat_id).exists(): 
-        result = Ethaddress.objects.filter(chat_id=chat_id)[0]
-        # result = Ethaddress.objects.get(chat_id=chat_id)
-        address = result.address
-        tot = "Your username \\- {} \n /changeeth \\- to change bsc address".format(address)
-        return tot
-    else:
-        msg = "You do not have a bsc address \n Click here /ethaddress"
-        return msg
-
-def _ethaddress(chat_id):
-    msg = "Enter your wallet address"
-    return msg
-
 def _ethaddress_cn(chat_id, text):
     try:
-        Ethaddress.objects.create(chat_id=chat_id, address=text)
+        if Ethaddress.objects.filter(chat_id=chat_id).exists():
+            return "*You've already set up your username*"
+        else:
+            Ethaddress.objects.create(chat_id=chat_id, address=text)
     except:
-        return "An error occurred"
-    return "Address is saved"
+        return "*An error occurred.*"
+    return "*Wallet Address is saved*"
 
 def _changeeth_cn(chat_id, text):
     try:
-        result = Facebook.objects.get(chat_id=chat_id)
+        result = Ethaddress.objects.get(chat_id=chat_id)
         result.address = text
         result.save()
     except:
         return "An error occurred"
-    return "Address is saved"
+    return "*Wallet Address is saved*"
 
 
 # the referral link
@@ -695,54 +977,26 @@ def _mylink(chat_id, fname):
     fname = fname
     if Link.objects.filter(chat_id=chat_id).exists():
         links = Link.objects.get(chat_id=chat_id)
-        # print("it is here")
-        gen_c = links.gen_c
-        msg = "https://telegram.me/cypherSpotBot?start={}".format(gen_c)
-        # send_msg(chat_id, msg)
+        msg = f"*⏯️ Total Invites er: {links.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/cypherSpotBot?start={links.gen_c} *"
         return msg
     else:
         try:
-            # print("starting")
             l = Link.objects.create(chat_id=chat_id, fname=fname)
-            # print(l, "sad")
-            # print("ending")
         except:
-            return "Complete your task and fill in your details to get your link"
+            return "*Fill your social media info to get your link*"
         lin = Link.objects.get(chat_id=chat_id)
-        gen = lin.gen_c
-        msg = "https://telegram.me/cypherSpotBot?start={}".format(gen)
+        msg = f"*⏯️ Total Invites rt: {lin.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/cypherSpotBot?start={lin.gen_c}*"
         # send_msg(chat_id, msg)
         return msg
-    return "That is your referral link"
-
-
-def _reflist(chat_id):
-    chat_id = chat_id
-    if Link.objects.filter(chat_id=chat_id).exists():
-        link = Link.objects.get(chat_id=chat_id)
-        reflist = link.referal
-        msg = "You have " + str(reflist) + " referrals"
-        return msg
-    return "You haven't gotten your referral link yet"
 
 def _top(chat_id):
-    # link = Link.query.order_by(Link.referal.desc()).all()
-    link = Link.objects.order_by("-referal")
+    # link = Link.query.order_by(Link.referral.desc()).all()
+    link = Link.objects.order_by("-referral")
     for lin in link[:10]:
-        return str(lin.fname) + " " + str(lin.referal)
+        return str(lin.fname) + " " + str(lin.referral)
 
-    return "You haven't gotten your referral link yet"
+    return "*You haven't gotten your referral link yet*"
 
-
-def _clear(chat_id):
-    chat_id = chat_id
-    if Link.objects.filter(chat_id=chat_id).exists():
-        link = Link.objects.get(chat_id=chat_id)
-        link.referal = 0
-        link.save()
-        msg = "Your referal list has been cleared"
-        return msg
-    return "You haven't gotten your referral link yet"
 
 
 # def _exports(chat_id):
@@ -750,7 +1004,7 @@ def _clear(chat_id):
 #     link = Link.objects.all()
 #     with open("wub.csv", "w") as csv_file:
 #         fieldnames = ['id', 'chat_id', 'email', 'twitter', 'telegram',
-#         'facebook', 'ethaddress', 'fname', 'gen_c', 'referal', 'pub_date']
+#         'facebook', 'ethaddress', 'fname', 'gen_c', 'referral', 'pub_date']
 #         writer = csv.writer(csv_file)
 #         writer.writerow(fieldnames)
 #         for lin in link:
@@ -760,9 +1014,11 @@ def _clear(chat_id):
 
 
 error_msg= """
-/twitter \\- Input your twitter username
-/clear \\- clear Referral List
-/reflist \\- view my Referrals List
-/mylink \\- get my affiliate link
-/start \\- start
+❌ Unknown Command!
+
+You have send a Message directly into the Bot's chat or
+Menu structure has been modified by Admin.
+
+ℹ️ Do not send Messages directly to the Bot or
+reload the Menu by pressing /start
 """

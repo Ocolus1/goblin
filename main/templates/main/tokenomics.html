@@ -1,0 +1,403 @@
+{% extends "main/base.html" %} {% load static %} {% block content %}
+<head>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
+    <style>
+
+        .devo {
+            /* background-image : url("{% static 'main/img/1.png' %}"); */
+            background-size : cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            /* height: 100vh; */
+        }
+
+        .token {
+            color: #ffffff;
+            width: 90%;
+            padding: 15px;
+            margin: auto;
+            background-color: #000000;
+        }
+
+        h2 {
+            padding: .5rem;
+            font-size: 90%;
+            text-align: center;
+            margin: 1rem auto;
+            /* border: 2px solid white; */
+        }
+
+        .token_img {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        /* The lin on top of the timeline  */
+        .time_hr {
+            background-color: #DBC780;
+            padding: 0;
+            height: 2px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        /* The actual timeline (the vertical ruler) */
+        .timeline {
+            position: relative;
+            margin: 0 auto 2rem auto;
+            width: 100%;
+        }
+
+        /* The actual timeline (the vertical ruler) */
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: #DBC780;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            /* margin-left: -3px; */
+        }
+
+        /* Container around content */
+        .container {
+            padding: 1rem 0;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            /* border: 2px solid green; */
+            margin: 0;
+        }
+        
+        .h5_img1 {
+            position:absolute;
+            color: white;
+            margin: 0;
+            left: 50%;
+            top: 20%;
+            padding: 0;
+            width: 30%;
+            height: 30%;
+            /* border: 2px solid green; */
+        }
+        
+        .h5_img2 {
+            position:absolute;
+            color: white;
+            margin: 0;
+            left: 21%;
+            top: 20%;
+            padding: 0;
+            width: 30%;
+            height: 30%;
+            /* border: 2px solid green; */
+        }
+        
+        .time_div {
+            position: relative;
+        }
+
+        /* Place the container to the left */
+        .left {
+            left: 0;
+            /* padding: 1rem 0rem 1rem 20rem; */
+        }
+
+        /* Place the container to the right */
+        .right {
+            left: 50%;
+            /* padding: 1rem 20rem 1rem 0rem;  */
+        }
+
+        /* The actual content */
+        .content {
+            text-align: center;
+        }
+        
+        .time_p {
+            color: #FFFFFFDE;
+            font-family: Rosarivo;
+            font-size: 90%;
+        }
+
+    
+
+        /* Media queries - Responsive timeline on screens less than 600px wide */
+
+        @media screen and (min-width: 576px) {
+            .token {
+                width: 70%;
+            }
+
+            .time_p {
+                font-size: 95%;
+            }
+
+            h2 {
+                padding: .5rem;
+                font-size: 95%;
+            }
+
+            .left {
+                padding: 1rem 0rem 1rem 2rem;
+            }
+
+            .right {
+                padding: 1rem 2rem 1rem 0rem; 
+            }
+
+        }
+
+        @media screen and (min-width: 768px) {   
+            .token {
+                width: 70%;
+            }
+
+            h2 {
+                padding: .8rem;
+                font-size: 100%;
+            }
+
+            .left {
+                padding: 1rem 0rem 1rem 6rem;
+            }
+
+            .right {
+                padding: 1rem 6rem 1rem 0rem; 
+            }
+
+            .time_hr {
+                width: 80%;
+            }
+
+            .h5_img1 {
+                height: 40%;
+            }
+            
+            .h5_img2 {
+                height: 40%;
+            }
+
+            .time_p {
+                font-size: 100%;
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            
+            .token {
+                width: 80%;
+            }
+
+            h2 {
+                padding: .9rem;
+                font-size: 150%;
+            }
+
+            .time_hr {
+                width: 45%;
+            }
+
+            .h5_img1 {
+                width: 20%;
+                height: 40%;
+            }
+            
+            .h5_img2 {
+                left: 30.5%;
+                width: 20%;
+                height: 40%;
+            }
+
+            .left {
+                padding: 1rem 0rem 1rem 12rem;
+            }
+
+            .right {
+                padding: 1rem 12rem 1rem 0rem; 
+            }
+
+            .time_p {
+                font-size: 110%;
+            }
+            
+        }
+        @media screen and (min-width: 1024px) {
+            
+            .token {
+                width: 80%;
+            }
+
+            h2 {
+                padding: 1rem;
+            }
+
+            .time_hr {
+                width: 40%;
+            }
+
+            .h5_img1 {
+                width: 20%;
+                height: 40%;
+            }
+            
+            .h5_img2 {
+                left: 30.5%;
+                width: 20%;
+                height: 40%;
+            }
+
+            .left {
+                padding: 1rem 0rem 1rem 12rem;
+            }
+
+            .right {
+                padding: 1rem 12rem 1rem 0rem; 
+            }
+
+            .time_p {
+                font-size: 120%;
+            }
+        }
+        @media screen and (min-width: 1280px) {
+
+            .h5_img1 {
+                width: 15%;
+                height: 40%;
+            }
+            
+            .h5_img2 {
+                left: 35%;
+                width: 15%;
+                height: 40%;
+            }
+
+            .left {
+                padding: 1rem 0rem 1rem 17rem;
+            }
+
+            .right {
+                padding: 1rem 17rem 1rem 0rem; 
+            }
+        }
+    </style>
+</head>
+<div class="devo">
+    <main class="token">
+        <h2>TOKEN DISTRIBUTION</h2>
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <img src="{% static 'main/img/23.png' %}" class="token_img">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <img src="{% static 'main/img/24.png' %}" class="token_img">
+            </div>
+        </div>
+        <h2>ROADMAP</h2>
+        <div>
+            <div class="timeline">
+                <div class="time_hr"></div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/25.png' %}" class="h5_img2">
+                    </h5>
+                    <div class="container right">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">Project Development</p>
+                                <p class="time_p">Team Formation</p>
+                                <p class="time_p">Game Development</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/26.png' %}" class="h5_img1">
+                    </h5>
+                    <div class="container left">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">Website Development</p>
+                                <p class="time_p">Social Media Set-Up</p>
+                                <p class="time_p">Telegram Bounty</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/27.png' %}" class="h5_img2">
+                    </h5>
+                    <div class="container right">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">Press Release</p>
+                                <p class="time_p">Game Demo Release</p>
+                                <p class="time_p">Game Bounty</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/28.png' %}" class="h5_img1">
+                    </h5>
+                    <div class="container left">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">Pre-Sale</p>
+                                <p class="time_p">Bounty Distribution</p>
+                                <p class="time_p">Rewards Activation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/29.png' %}" class="h5_img2">
+                    </h5>
+                    <div class="container right">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">NFT Devlopment</p>
+                                <p class="time_p">NFT Drop</p>
+                                <p class="time_p">NFT Marketplace</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/30.png' %}" class="h5_img1">
+                    </h5>
+                    <div class="container left">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">DAO Development</p>
+                                <p class="time_p">DAO Drop</p>
+                                <p class="time_p">DAO Forum</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="time_div">
+                    <h5>
+                        <img src="{% static 'main/img/31.png' %}" class="h5_img2">
+                    </h5>
+                    <div class="container right">
+                        <div class="content">
+                            <div class="tim_p">
+                                <p class="time_p">Goblin Hunter 11</p>
+                                <p class="time_p">Goblin Hunter 11 Launch</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+    {% endblock content %}

@@ -1,0 +1,41 @@
+{'update_id': 36149896, 'callback_query': {'id': '4599200226827188356', 'from': {'id': 1070834749, 'is_bot': False, 'first_name': 'Duke_of_python', 'language_code': 'en'
+    }, 'message': {'message_id': 4228, 'from': {'id': 1306743577, 'is_bot': True, 'first_name': 'cypherbot', 'username': 'cypherSpotBot'
+      }, 'chat': {'id': 1070834749, 'first_name': 'Duke_of_python', 'type': 'private'
+      }, 'date': 1641976450, 'text': '🎁 Please  Subscribe To our Channels to use the bot 😄 : \n @cyphertse\n\n☑️ Done Subscribed! Click Joined', 'entities': [
+        {'offs
+  et': 0, 'length': 57, 'type': 'bold'
+        },
+        {'offset': 59, 'length': 10, 'type': 'mention'
+        },
+        {'offset': 71, 'length': 32, 'type': 'bold'
+        }
+      ], 
+  'reply_markup': {'inline_keyboard': [
+          [
+            {'text': 'Press me', 'callback_data': 'press'
+            }
+          ]
+        ]
+      }
+    }, 'chat_instance': '-8881980725246458439', 'data': 'press'
+  }
+}
+
+
+{'update_id': 36149989, 'message': {'message_id': 4404, 'from': {'id': 1483958168, 'is_bot': False, 'first_name': 'Paul', 'last_name': 
+  'Awolesi', 'language_code': 'en'
+    }, 'chat': {'id': 1483958168, 'first_name': 'Paul', 'last_name': 'Awolesi', 'type': 'private'
+    }, 'date': 1642005181, 'text': '/start', 'entities': [
+      {'offset': 0, 'length': 6, 'type': 'bot_command'
+      }
+    ]
+  }
+}
+
+
+{'update_id': 36149991, 'message': {'message_id': 4408, 'from': {'id': 1483958168, 'is_bot': False, 'first_name': 'Paul', 'last_name': 
+  'Awolesi', 'language_code': 'en'
+    }, 'chat': {'id': 1483958168, 'first_name': 'Paul', 'last_name': 'Awolesi', 'type': 'private'
+    }, 'date': 1642005362, 'text': 'Image'
+  }
+}

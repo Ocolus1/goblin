@@ -8,6 +8,7 @@ secret = settings.SECRET
 urlpatterns = [
 	#Leave as empty string for base url
 	path('', views.index, name="index"),
+	path('timeline', views.tokenomics, name="timeline"),
 	path('login/', views.auth_login, name="login"),
 	path('register/', views.register, name="register"),
 	# path('register/<str:payload>', views.register, name="register"),

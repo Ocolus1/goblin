@@ -14,17 +14,24 @@
             <div class="collapse navbar-collapse" id="navbarsExample04">
                 <ul class="navbar-nav ms-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link"  href="#">TOKENOMICS</a>
+                        <a class="nav-link"  href="{% url 'timeline' %}">TOKENOMICS</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#">GAMEVERSE</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
-                        <a class="nav-link"  href="#">BLOG</a>
+                        <a class="nav-link"  href="/game" target="_blank">BLOG</a>
                     </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">CONNECTED</a>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">CONNECT WALLET</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -54,7 +61,12 @@
     font-size: 110%;
   }
 
-  .nav-item:nth-child(4) a {
+  .nav-link:hover {
+    border-bottom: 2px solid #DDB957;
+  }
+
+
+  .nav-item:nth-child(3) a {
     color: #DDB957 !important;
     font-family: "Bell MT";
     font-size: 90%;

@@ -10,11 +10,5 @@
           "src": "/(.*)",
           "dest": "goblin/wsgi.py"
       }
-  ],"functions": {
-      "api/test.js": {
-        "memory": 3008,
-        "maxDuration": 30
-      }
-    
-  }
+  ]
 }
